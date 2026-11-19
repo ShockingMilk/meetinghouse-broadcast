@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+.venv/
+venv/
+
+# Secrets
+.env
+config/local.yaml
+
+# Logs
+logs/*.log
+logs/*.log.*
+
+# Runtime state
+*.pid
+*.lock
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

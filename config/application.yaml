@@ -1,0 +1,35 @@
+application:
+  name: Meetinghouse Broadcast Controller
+  version: "0.1.0"
+
+paths:
+  logs: logs
+  state: ~/.local/state/meetinghouse-broadcast
+
+startup:
+  startup_timeout: 45
+  shutdown_timeout: 15
+  health_check_interval: 2
+
+  # Continue operating if camera control is unavailable.
+  camera_failure_is_fatal: false
+
+  # Start the Zoom meeting after OBS is ready.
+  launch_zoom: true
+
+  # Recall the default camera preset on startup.
+  recall_initial_preset: true
+
+shutdown:
+  stop_virtual_camera: true
+
+  # Only terminate OBS if this application started it.
+  close_owned_obs: true
+
+  # Do not automatically terminate arbitrary Zoom processes.
+  close_zoom: false
+
+logging:
+  level: INFO
+  max_bytes: 5242880
+  backup_count: 5

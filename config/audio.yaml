@@ -1,0 +1,40 @@
+audio:
+  enabled: true
+
+  virtual_device:
+    sink_name: meetinghouse_broadcast
+    description: Meetinghouse_Broadcast
+    sample_rate: 48000
+    channels: 2
+
+    # The source Zoom will select as its microphone
+    microphone_source_name: meetinghouse_broadcast_mic
+    microphone_description: Meetinghouse_Broadcast_Microphone
+
+  microphone:
+    # Empty means automatically use the default physical input.
+    preferred_source: ""
+
+    # Used if the preferred source is unavailable.
+    fallback_source: alsa_input.pci-0000_00_1f.3.analog-stereo
+
+    latency_msec: 50
+
+  music:
+    directory: media/music
+    player: ffmpeg
+
+    # Supported extensions are checked against actual files.
+    extensions:
+      - .mp3
+      - .wav
+      - .ogg
+      - .flac
+
+    repeat_playlist: false
+    track_order: shuffle
+
+  behavior:
+    stop_music_before_microphone: true
+    stop_microphone_before_music: true
+    cleanup_virtual_device_on_shutdown: true

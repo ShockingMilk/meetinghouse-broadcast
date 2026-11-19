@@ -1,0 +1,24 @@
+camera:
+  enabled: true
+
+  name: Tongveo NV20U-4K
+
+  connection:
+    host: CAMERA_CONNECTION_HOST
+    port: CAMERA_CONNECTION_PORT
+    transport: udp
+    packet_mode: visca_over_ip
+    timeout: 1.0
+
+  initial_preset: 0
+
+  commands:
+    recall: "8101043F02{preset:02X}FF"
+
+  sequence:
+    initial_value: 1
+    maximum_value: 4294967295
+
+  behavior:
+    ignore_repeated_scene: true
+    movement_delay: 0.0

@@ -1,0 +1,28 @@
+obs:
+  executable: obs
+
+  # Leave blank to use the currently configured OBS profile
+  # and scene collection.
+  profile: ""
+  scene_collection: ""
+
+  initial_scene: "00 - Default"
+
+  websocket:
+    host: OBS_WS_HOST
+    port: OBS_WS_PORT
+    password_environment_variable: OBS_WS_PASSWORD
+    timeout: 5
+
+  virtual_camera:
+    enabled: true
+    startup_timeout: 20
+    verify_interval: 1
+
+  scene_monitor:
+    enabled: true
+    poll_interval: 0.75
+
+    # Delay after a program scene change before moving the camera.
+    # Increase if you want to let a transition finish first.
+    transition_settle_seconds: 0.5

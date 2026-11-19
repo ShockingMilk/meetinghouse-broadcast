@@ -1,0 +1,72 @@
+profiles:
+  "00 - Default":
+    camera: false
+    camera_preset: 0
+    microphone: false
+    music:
+      playlist: prelude_postlude
+      enabled: true
+    overlay: false
+    logo: true
+
+  "01 - Speaker":
+    camera: true
+    camera_preset: 1
+    microphone: true
+    music:
+      enabled: false
+    overlay: speaker
+    logo: false
+
+  "02 - Chorister":
+    camera: true
+    camera_preset: 2
+    microphone: true
+    music:
+      enabled: false
+    overlay: hymn
+    logo: false
+
+  "03 - Choir":
+    camera: true
+    camera_preset: 3
+    microphone: true
+    music:
+      enabled: false
+    overlay: false
+    logo: false
+
+  "04 - Blessing Left":
+    camera: true
+    camera_preset: 4
+    microphone: true
+    music:
+      enabled: false
+    overlay: false
+    logo: false
+
+  "05 - Piano":
+    camera: true
+    camera_preset: 5
+    music:
+      enabled: false
+    overlay: false
+    logo: false
+
+  "06 - Blessing Right":
+    camera: true
+    camera_preset: 6
+    music:
+      enabled: false
+    overlay: false
+    logo: false
+
+  "10 - Sacraiment":
+    camera: false
+    camera_preset: 0
+    microphone: false
+    music:
+      playlist: sacrament
+      enabled: true
+    overlay: false
+    logo: true

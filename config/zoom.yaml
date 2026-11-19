@@ -1,0 +1,18 @@
+zoom:
+  enabled: true
+  meeting_url: ZOOM_MEETING_URL
+
+  # Use the desktop's registered Zoom URL handler.
+  launcher: xdg-open
+
+  startup_delay: 3
+
+  behavior:
+    # We do not automatically join the meeting.
+    require_manual_join: true
+
+    # Configure OBS Virtual Camera once in Zoom.
+    remember_camera_selection: true
+
+    # Sound is deliberately outside this project's scope.
+    audio_configuration: manual
