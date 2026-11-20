@@ -24,6 +24,4 @@ camera:
     movement_delay: 0.0
 
   monitoring:
-    # Exact OBS input name for the RTSP camera source.
-    # Leave blank until confirmed.
-    obs_input_name: ""
+    obs_input_name: OBS_INPUT_NAME
