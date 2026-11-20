@@ -8,10 +8,8 @@ monitoring:
   max_file_bytes: 5242880
 
   # Number of segments retained per session.
-  # Older segments are removed when this limit is exceeded.
   backup_count: 10
 
-  # Future default operating mode.
   default_mode: passive
 
   modes:
@@ -62,6 +60,19 @@ monitoring:
         network:
           enabled: true
           interval_seconds: 5
+
+          # Connectivity checks generate network traffic.
+          # They only run when explicitly enabled.
+          diagnostics_enabled: false
+          connectivity_timeout_seconds: 3
+
+          # Example targets; uncomment and configure when needed.
+          # dns_test_hosts:
+          #   - example.com
+          #
+          # tcp_test_targets:
+          #   - host: 192.168.1.1
+          #     port: 80
 
         system:
           enabled: true
