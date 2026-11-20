@@ -383,7 +383,7 @@ class OBSCollector:
             response = client.send(
                 "GetInputActive",
                 {
-                    "inputName": source_name,
+                    "sourceName": source_name,
                 },
                 raw=True,
             )

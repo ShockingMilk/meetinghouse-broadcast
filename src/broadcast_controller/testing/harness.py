@@ -440,7 +440,7 @@ class ActiveTestHarness:
 
         response = self.obs.client.send(
             "GetInputActive",
-            {"inputName": source_name},
+            {"sourceName": source_name},
             raw=True,
         )
 

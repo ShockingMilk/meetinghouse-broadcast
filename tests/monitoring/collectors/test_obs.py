@@ -98,7 +98,7 @@ def make_responses():
                 },
             ]
         },
-        "GetInputActive": {
+        "GetSourceActive": {
             "videoActive": True,
             "videoShowing": True,
         },
@@ -264,7 +264,7 @@ def test_obs_collector_uses_only_read_requests(config):
             "GetVirtualCamStatus",
             "GetStats",
             "GetInputList",
-            "GetInputActive",
+            "GetSourceActive",
         }
     )
 
