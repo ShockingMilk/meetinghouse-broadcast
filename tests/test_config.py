@@ -12,6 +12,17 @@ class ConfigTests(unittest.TestCase):
         self.assertIn("camera", config)
         self.assertIn("zoom", config)
 
+    def test_monitoring_configuration_loads(self):
+        config = load_config()
+
+        self.assertIn("monitoring", config)
+
+        monitoring = config["monitoring"]["monitoring"]
+
+        self.assertEqual(monitoring["default_mode"], "passive")
+
+        self.assertIn("passive", monitoring["modes"])
+
     def test_camera_has_connection_settings(self):
         config = load_config()
 

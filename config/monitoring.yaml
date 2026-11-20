@@ -1,0 +1,76 @@
+monitoring:
+  schema_version: "1.0"
+
+  # Relative paths are resolved from the project root.
+  output_directory: logs/monitoring
+
+  # Maximum size of an individual JSONL segment.
+  max_file_bytes: 5242880
+
+  # Number of segments retained per session.
+  # Older segments are removed when this limit is exceeded.
+  backup_count: 10
+
+  # Future default operating mode.
+  default_mode: passive
+
+  modes:
+    passive:
+      allow_control_actions: false
+
+      collectors:
+        network:
+          enabled: true
+          interval_seconds: 5
+
+        system:
+          enabled: true
+          interval_seconds: 15
+
+        obs:
+          enabled: true
+          interval_seconds: 5
+
+        camera:
+          enabled: true
+          interval_seconds: 10
+
+    active:
+      allow_control_actions: true
+
+      collectors:
+        network:
+          enabled: true
+          interval_seconds: 2
+
+        system:
+          enabled: true
+          interval_seconds: 5
+
+        obs:
+          enabled: true
+          interval_seconds: 2
+
+        camera:
+          enabled: true
+          interval_seconds: 2
+
+    diagnostic:
+      allow_control_actions: false
+
+      collectors:
+        network:
+          enabled: true
+          interval_seconds: 5
+
+        system:
+          enabled: true
+          interval_seconds: 5
+
+        obs:
+          enabled: true
+          interval_seconds: 5
+
+        camera:
+          enabled: true
+          interval_seconds: 5

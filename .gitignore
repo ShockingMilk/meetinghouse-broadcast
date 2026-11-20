@@ -26,3 +26,6 @@ logs/*.log.*
 # OS
 .DS_Store
 Thumbs.db
+
+# Monitoring data
+logs/monitoring/

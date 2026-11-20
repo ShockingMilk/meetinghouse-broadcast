@@ -61,7 +61,7 @@ profiles:
     overlay: false
     logo: false
 
-  "10 - Sacraiment":
+  "10 - Sacrament":
     camera: false
     camera_preset: 0
     microphone: false

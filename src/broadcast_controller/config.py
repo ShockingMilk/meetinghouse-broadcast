@@ -21,6 +21,7 @@ def load_config():
         "zoom": load_yaml("zoom.yaml"),
         "audio": load_yaml("audio.yaml"),
         "broadcast_profiles": load_yaml("broadcast_profiles.yaml"),
+        "monitoring": load_yaml("monitoring.yaml"),
     }
 
     obs_config = config["obs"]["obs"]
