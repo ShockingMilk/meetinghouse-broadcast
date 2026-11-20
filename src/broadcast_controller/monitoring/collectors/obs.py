@@ -316,7 +316,7 @@ class OBSCollector:
 
             inventory = [
                 {
-                    "name": item.get("sourceName"),
+                    "name": item.get("inputName"),
                     "kind": item.get("inputKind"),
                 }
                 for item in inputs
@@ -381,7 +381,7 @@ class OBSCollector:
 
         try:
             response = client.send(
-                "GetInputActive",
+                "GetSourceActive",
                 {
                     "sourceName": source_name,
                 },
