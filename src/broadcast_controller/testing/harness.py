@@ -1,4 +1,3 @@
-import json
 import time
 
 from pathlib import Path
@@ -136,6 +135,7 @@ class ActiveTestHarness:
 
     def _ask_yes_no(self, prompt: str) -> bool:
         answer = self.input(f"{prompt} [y/N]: ").strip().lower()
+
         return answer in {"y", "yes"}
 
     # ---------------------------------------------------------
@@ -153,7 +153,11 @@ class ActiveTestHarness:
             version = self.obs.client.get_version()
 
             version_value = {
-                "obs_version": getattr(version, "obs_version", None),
+                "obs_version": getattr(
+                    version,
+                    "obs_version",
+                    None,
+                ),
                 "websocket_version": getattr(
                     version,
                     "obs_web_socket_version",
@@ -373,11 +377,15 @@ class ActiveTestHarness:
 
                 monitor.process_scene(scene_name)
 
+                # SceneMonitor catches camera exceptions internally.
+                # A fresh monitor starts with no last_camera_preset, so
+                # this verifies that recall_preset returned successfully.
                 if monitor.last_camera_preset != preset:
                     self._result(
                         f"scene_{scene_name}",
                         TestStatus.FAIL,
-                        "SceneMonitor did not apply the expected camera preset.",
+                        "SceneMonitor did not successfully apply "
+                        "the expected camera preset command.",
                         scene=scene_name,
                         expected_preset=preset,
                         applied_preset=monitor.last_camera_preset,
@@ -487,11 +495,20 @@ class ActiveTestHarness:
             )
             return
 
-        if not self._ask_yes_no("Is it safe to temporarily interrupt the camera feed?"):
+        # The camera uses PoE. Interrupting its Ethernet connection
+        # may also remove its power. Only proceed if the operator has
+        # a safe way to interrupt video/data without disconnecting PoE.
+        if not self._ask_yes_no(
+            "Can you interrupt the camera's video/data path "
+            "while keeping its power connection intact?"
+        ):
             self._result(
                 "rtsp_interruption",
                 TestStatus.SKIPPED,
-                "Operator declined to interrupt the camera feed.",
+                (
+                    "No safe data-only interruption method is available. "
+                    "Camera power must remain connected."
+                ),
             )
             return
 
@@ -500,30 +517,33 @@ class ActiveTestHarness:
             input_name=baseline["input_name"],
         )
 
-        self.output("\nTemporarily disconnect the camera's video/network connection.")
-        self.output("Do not disconnect the camera's power unless specifically required.")
+        self.output("\nInterrupt only the camera's video/data path.")
+        self.output("Do NOT unplug the camera's PoE Ethernet cable.")
+        self.output("Do NOT change managed switch settings without authorization.")
 
-        if not self._wait_for_video_showing(False):
+        interruption_detected = self._wait_for_video_showing(False)
+
+        if interruption_detected:
+            self._result(
+                "rtsp_interruption",
+                TestStatus.PASS,
+                "OBS reported that the camera input stopped showing video.",
+            )
+        else:
             self._result(
                 "rtsp_interruption",
                 TestStatus.FAIL,
                 "OBS did not report the camera input as no longer showing.",
                 input_name=baseline["input_name"],
             )
-            return
-
-        self._result(
-            "rtsp_interruption",
-            TestStatus.PASS,
-            "OBS reported that the camera input stopped showing video.",
-        )
 
         self._dispatch(
             HarnessEventType.RTSP_RESTORATION_REQUESTED,
             input_name=baseline["input_name"],
         )
 
-        self.output("\nReconnect the camera's video/network connection.")
+        self.output("\nRestore the camera's video/data path.")
+        self.output("Keep the camera's PoE power connection intact.")
 
         if not self._wait_for_video_showing(True):
             self._result(
@@ -574,6 +594,50 @@ class ActiveTestHarness:
 
                 monitor.process_scene(self.original_scene)
 
+                profile = (
+                    self.config["broadcast_profiles"]["profiles"].get(
+                        self.original_scene
+                    )
+                )
+
+                expected_preset = (
+                    int(profile["camera_preset"])
+                    if profile and "camera_preset" in profile
+                    else None
+                )
+
+                if (
+                    expected_preset is not None
+                    and monitor.last_camera_preset != expected_preset
+                ):
+                    self._result(
+                        "restore_original_camera",
+                        TestStatus.FAIL,
+                        (
+                            "Original scene was restored, but its camera "
+                            "preset command was not successfully applied."
+                        ),
+                        scene=self.original_scene,
+                        expected_preset=expected_preset,
+                        applied_preset=monitor.last_camera_preset,
+                    )
+                    return
+
+                if expected_preset is not None:
+                    self._result(
+                        "restore_original_camera",
+                        TestStatus.PASS,
+                        (
+                            "Original scene camera preset command was sent. "
+                            "Physical camera position was not independently "
+                            "verified."
+                        ),
+                        scene=self.original_scene,
+                        expected_preset=expected_preset,
+                        applied_preset=monitor.last_camera_preset,
+                        physical_verification="not_checked",
+                    )
+
             self._result(
                 "restore_original_scene",
                 TestStatus.PASS,
@@ -609,6 +673,10 @@ class ActiveTestHarness:
                 except Exception:
                     pass
 
+    # ---------------------------------------------------------
+    # Harness execution
+    # ---------------------------------------------------------
+
     def run(self) -> Path:
         self.confirm_test_environment()
 
@@ -637,6 +705,7 @@ class ActiveTestHarness:
         finally:
             try:
                 self.restore_original_scene()
+
             finally:
                 self.close()
 

@@ -6,9 +6,10 @@ from broadcast_controller.monitoring.enums import CollectorSafety, MonitoringMod
 from broadcast_controller.monitoring.records import MonitoringRecord
 from broadcast_controller.monitoring.session import MonitoringSession
 from broadcast_controller.monitoring.writer import JSONLWriter
-
+from broadcast_controller.monitoring.collectors import CameraCollector, NetworkCollector, OBSCollector, SystemCollector
 
 __all__ = [
+    "CameraCollector",
     "CollectorContext",
     "CollectorSafety",
     "JSONLWriter",
@@ -17,6 +18,9 @@ __all__ = [
     "MonitoringMode",
     "MonitoringRecord",
     "MonitoringSession",
+    "NetworkCollector",
+    "OBSCollector",
     "RecordStatus",
     "RecordType",
+    "SystemCollector",
 ]

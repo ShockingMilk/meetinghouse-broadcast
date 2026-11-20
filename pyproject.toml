@@ -21,6 +21,7 @@ dev = [
 [project.scripts]
 meetinghouse-broadcast = "broadcast_controller.main:main"
 meetinghouse-broadcast-test = "broadcast_controller.testing.cli:main"
+meetinghouse-broadcast-monitor = "broadcast_controller.monitoring.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

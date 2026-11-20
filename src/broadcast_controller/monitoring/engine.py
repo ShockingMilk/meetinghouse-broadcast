@@ -4,7 +4,7 @@ from dataclasses import dataclass, replace
 from typing import Protocol
 
 from broadcast_controller.monitoring.configuration import MonitoringConfiguration
-from broadcast_controller.monitoring.enums import  CollectorSafety, MonitoringMode, RecordStatus, RecordType
+from broadcast_controller.monitoring.enums import CollectorSafety, MonitoringMode, RecordStatus, RecordType
 from broadcast_controller.monitoring.records import MonitoringRecord
 from broadcast_controller.monitoring.session import MonitoringSession
 from broadcast_controller.monitoring.writer import JSONLWriter
@@ -67,6 +67,11 @@ class MonitoringEngine:
 
         self._collectors[collector.name] = collector
 
+    @property
+    def collector_names(self) -> tuple[str, ...]:
+        """Return registered collector names in registration order."""
+        return tuple(self._collectors)
+
     def _write_collector_failure(
         self,
         collector_name: str,
@@ -97,59 +102,78 @@ class MonitoringEngine:
             ),
         )
 
+    def run_collector(self, name: str) -> int:
+        """Run one enabled collector and return the number of records written."""
+        if self._closed:
+            raise RuntimeError("Monitoring engine is closed.")
+
+        if name not in self._collectors:
+            raise KeyError(f"Unknown collector: {name}")
+
+        collector = self._collectors[name]
+
+        settings = self.configuration.get_collector_settings(
+            self.session.mode,
+            name,
+        )
+
+        if not settings.enabled:
+            return 0
+
+        if (
+            collector.safety is CollectorSafety.CONTROL
+            and not self.configuration.allows_control_actions(self.session.mode)
+        ):
+            raise PermissionError(f"Control collector '{name}' is not allowed.")
+
+        context = CollectorContext(
+            session_id=self.session.session_id,
+            mode=self.session.mode,
+            settings={
+                "interval_seconds": settings.interval_seconds,
+                **settings.options,
+            },
+        )
+
+        records_written = 0
+
+        try:
+            records = collector.collect(context)
+
+            if records is None:
+                records = []
+
+            for record in records:
+                if not isinstance(record, MonitoringRecord):
+                    raise TypeError(f"Collector '{name}' returned an invalid record.")
+
+                # The engine owns session identity and mode.
+                # A collector cannot accidentally write records
+                # under a different session or operating mode.
+                normalized = replace(
+                    record,
+                    session_id=self.session.session_id,
+                    mode=self.session.mode,
+                )
+
+                self.writer.write(normalized)
+                records_written += 1
+
+        except Exception as error:
+            self._write_collector_failure(name, error)
+            records_written += 1
+
+        return records_written
+
     def run_once(self) -> int:
+        """Run every registered collector once."""
         if self._closed:
             raise RuntimeError("Monitoring engine is closed.")
 
         records_written = 0
 
-        for name, collector in self._collectors.items():
-            settings = self.configuration.get_collector_settings(self.session.mode, name)
-
-            if not settings.enabled:
-                continue
-
-            if (
-                collector.safety is CollectorSafety.CONTROL
-                and not self.configuration.allows_control_actions(self.session.mode)
-            ):
-                raise PermissionError(f"Control collector '{name}' is not allowed.")
-
-            context = CollectorContext(
-                session_id=self.session.session_id,
-                mode=self.session.mode,
-                settings={
-                    "interval_seconds": settings.interval_seconds,
-                    **settings.options,
-                },
-            )
-
-            try:
-                records = collector.collect(context)
-
-                if records is None:
-                    records = []
-
-                for record in records:
-                    if not isinstance(record, MonitoringRecord):
-                        raise TypeError(f"Collector '{name}' returned an invalid record.")
-
-                    # The engine owns session identity and mode.
-                    # A collector cannot accidentally write records
-                    # under a different session or operating mode.
-                    normalized = replace(
-                        record,
-                        session_id=self.session.session_id,
-                        mode=self.session.mode,
-                    )
-
-                    self.writer.write(normalized)
-                    records_written += 1
-
-            except Exception as error:
-                self._write_collector_failure(name, error)
-
-                records_written += 1
+        for name in self.collector_names:
+            records_written += self.run_collector(name)
 
         return records_written
 
