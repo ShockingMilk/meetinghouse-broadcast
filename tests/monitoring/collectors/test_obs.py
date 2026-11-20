@@ -243,7 +243,7 @@ def test_missing_camera_input_is_unavailable(config):
     )
 
     assert camera_record.status is RecordStatus.UNAVAILABLE
-    assert "not found" in camera_record.message
+    assert camera_record.message == "No OBS camera input name is configured."
 
 
 def test_obs_collector_uses_only_read_requests(config):
