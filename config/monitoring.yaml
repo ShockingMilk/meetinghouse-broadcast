@@ -85,3 +85,9 @@ monitoring:
         camera:
           enabled: true
           interval_seconds: 5
+
+          # Diagnostic-only RTSP listener check.
+          rtsp_tcp_probe_enabled: false
+          rtsp_host: ""
+          rtsp_port: null
+          connectivity_timeout_seconds: 3

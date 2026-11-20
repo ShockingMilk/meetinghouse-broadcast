@@ -22,3 +22,8 @@ camera:
   behavior:
     ignore_repeated_scene: true
     movement_delay: 0.0
+
+  monitoring:
+    # Exact OBS input name for the RTSP camera source.
+    # Leave blank until confirmed.
+    obs_input_name: ""
