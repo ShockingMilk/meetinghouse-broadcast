@@ -13,6 +13,8 @@ def utc_now() -> str:
 
 
 class TestStatus(str, Enum):
+    __test__ = False
+
     PASS = "pass"
     FAIL = "fail"
     SKIPPED = "skipped"
@@ -21,6 +23,8 @@ class TestStatus(str, Enum):
 
 @dataclass(frozen=True)
 class TestResult:
+    __test__ = False
+
     test_name: str
     status: TestStatus
     message: str
@@ -47,6 +51,7 @@ class TestResult:
 
 class TestResultWriter:
     """Write test events and results to a dedicated session directory."""
+    __test__ = False
 
     def __init__(self, output_directory: Path):
         self.session_id = (
