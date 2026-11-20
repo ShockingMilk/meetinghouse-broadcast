@@ -316,7 +316,7 @@ class OBSCollector:
 
             inventory = [
                 {
-                    "name": item.get("inputName"),
+                    "name": item.get("sourceName"),
                     "kind": item.get("inputKind"),
                 }
                 for item in inputs
