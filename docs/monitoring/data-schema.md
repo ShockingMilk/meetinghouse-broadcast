@@ -254,3 +254,86 @@ Monitoring records must not contain:
 
 Network addresses and device information should be accessible
 only to authorized management users.
+
+## Active test harness output
+
+The active test harness writes a separate session format under:
+
+    logs/tests/SESSION_ID/
+
+Each session contains:
+
+- `session.json`
+- `events.jsonl`
+- `results.jsonl`
+
+These files are separate from the passive monitoring record format.
+
+### Test session metadata
+
+The session metadata includes:
+
+- session_id
+- started_at
+- ended_at
+- status
+- software_name
+- schema_version
+
+### Events
+
+Each line in `events.jsonl` represents an event generated during
+the active test session.
+
+Fields:
+
+- event_id
+- event_type
+- timestamp
+- payload
+
+Event types include:
+
+- harness_started
+- obs_connected
+- camera_preset_requested
+- scene_transition_requested
+- rtsp_interruption_requested
+- rtsp_restoration_requested
+- harness_stopped
+
+### Test results
+
+Each line in `results.jsonl` represents one test outcome.
+
+Fields:
+
+- result_id
+- test_name
+- status
+- message
+- details
+- timestamp
+
+Test statuses:
+
+- pass
+- fail
+- skipped
+- inconclusive
+
+The `details` field contains additional information specific to the
+test, such as the scene name, expected camera preset, error message,
+or operator verification.
+
+### Interpretation
+
+Active test results are not interchangeable with monitoring records.
+
+A monitoring record describes an observed component state or
+measurement.
+
+A test result describes the outcome of a deliberate test procedure.
+
+Both formats use JSON Lines so they can be processed independently
+without requiring a database.

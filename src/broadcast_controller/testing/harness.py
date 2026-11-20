@@ -3,13 +3,14 @@ import time
 from pathlib import Path
 
 from broadcast_controller.camera.visca import VISCAController
+from broadcast_controller.config import get_project_root
+from broadcast_controller.monitoring.configuration import MonitoringConfiguration
 from broadcast_controller.obs.client import OBSController
 from broadcast_controller.services.scene_monitor import SceneMonitor
 from broadcast_controller.testing.event_dispatcher import EventDispatcher
 from broadcast_controller.testing.events import HarnessEvent, HarnessEventType
 from broadcast_controller.testing.results import TestResult, TestResultWriter, TestStatus
 from broadcast_controller.utils.process import is_process_running
-
 
 CONFIRMATION_PHRASE = "NO LIVE BROADCAST"
 
@@ -680,7 +681,12 @@ class ActiveTestHarness:
     def run(self) -> Path:
         self.confirm_test_environment()
 
-        output_directory = Path(self.config["monitoring"]["monitoring"]["output_directory"]).parent / "tests"
+        monitoring_configuration = MonitoringConfiguration.from_mapping(
+            self.config["monitoring"],
+            get_project_root(),
+        )
+
+        output_directory = monitoring_configuration.output_directory.parent / "tests"
 
         self.writer = self.result_writer_factory(output_directory)
 

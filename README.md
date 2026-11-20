@@ -261,7 +261,43 @@ Run the unit tests:
 
 ---
 
-# 13. Shutdown Behavior
+# 13. Monitoring
+
+Meetinghouse Broadcast includes read-only monitoring and a separate
+active equipment test harness.
+
+Start passive monitoring:
+
+    meetinghouse-broadcast-monitor
+
+Run one collection snapshot:
+
+    meetinghouse-broadcast-monitor --once
+
+Run diagnostic monitoring:
+
+    meetinghouse-broadcast-monitor --mode diagnostic
+
+Run the active test harness:
+
+    meetinghouse-broadcast-test
+
+The active test harness can change OBS scenes and send PTZ preset
+commands. Never run it during a meeting or live broadcast.
+
+Monitoring documentation:
+
+    docs/monitoring/README.md
+
+Passive and diagnostic sessions are stored under:
+
+    logs/monitoring/
+
+Active test sessions are stored under:
+
+    logs/tests/
+
+# 14. Shutdown Behavior
 
 The shutdown process:
 
@@ -281,7 +317,7 @@ is not terminated.
 
 ---
 
-# 14. Security
+# 15. Security
 
 - OBS WebSocket authentication must remain enabled.
 - Do not expose port 4455 to the internet.
@@ -293,7 +329,7 @@ is not terminated.
 
 ---
 
-# 15. Known Limitations
+# 16. Known Limitations
 
 - Zoom camera selection is configured manually.
 - Zoom meeting joining requires operator confirmation.
@@ -308,7 +344,7 @@ is not terminated.
 
 ---
 
-# 16. Future Improvements
+# 17. Future Improvements
 
 - VISCA response verification.
 - Camera movement completion detection.
