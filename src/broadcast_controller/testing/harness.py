@@ -439,7 +439,7 @@ class ActiveTestHarness:
             raise ValueError("OBS camera input name is not configured.")
 
         response = self.obs.client.send(
-            "GetInputActive",
+            "GetSourceActive",
             {"sourceName": source_name},
             raw=True,
         )

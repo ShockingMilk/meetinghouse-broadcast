@@ -1,6 +1,7 @@
 import pytest
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from broadcast_controller.testing.harness import ActiveTestHarness
 
@@ -47,3 +48,49 @@ def test_harness_requires_exact_confirmation(tmp_path):
 
     with pytest.raises(RuntimeError, match="confirmation"):
         harness.confirm_test_environment()
+
+def test_camera_input_activity_uses_get_source_active(tmp_path):
+    class FakeClient:
+        def __init__(self):
+            self.request = None
+
+        def send(self, request_type, request_data=None, raw=False):
+            self.request = (request_type, request_data, raw)
+
+            return {
+                "videoActive": True,
+                "videoShowing": True,
+            }
+
+    client = FakeClient()
+
+    config = {
+        "camera": {
+            "camera": {
+                "monitoring": {
+                    "obs_input_name": "Meetinghouse Camera",
+                }
+            }
+        }
+    }
+
+    harness = ActiveTestHarness(
+        config=config,
+        state_directory=tmp_path,
+    )
+
+    harness.obs = SimpleNamespace(client=client)
+
+    activity = harness._get_camera_input_activity()
+
+    assert client.request == (
+        "GetSourceActive",
+        {"sourceName": "Meetinghouse Camera"},
+        True,
+    )
+
+    assert activity == {
+        "video_active": True,
+        "video_showing": True,
+        "input_name": "Meetinghouse Camera",
+    }
