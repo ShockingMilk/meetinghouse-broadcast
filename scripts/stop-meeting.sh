@@ -44,6 +44,19 @@ fi
 
 if [[ "$RESULT" -eq 0 ]]; then
 
+    # Stop monitoring after the broadcast controller has stopped.
+    # Monitoring shutdown must not interfere with broadcast shutdown.
+
+    if ! "$PROJECT_ROOT/scripts/stop-monitoring.sh"; then
+        echo "WARNING: Broadcast stopped, but monitoring may still be running."
+
+        if command -v notify-send >/dev/null 2>&1; then
+            notify-send \
+                "Meetinghouse Broadcast" \
+                "Broadcast stopped, but monitoring may still be running. Check its status."
+        fi
+    fi
+
     if command -v notify-send >/dev/null 2>&1; then
 	    notify-send \
         	"Meetinghouse Broadcast" \

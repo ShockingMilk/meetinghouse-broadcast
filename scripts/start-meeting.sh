@@ -37,6 +37,19 @@ nohup "$PYTHON" -m broadcast_controller.main start \
 
 sleep 2
 
+# Start monitoring independently.
+# A monitoring failure must not interrupt broadcast startup.
+
+if ! "$PROJECT_ROOT/scripts/start-monitoring.sh"; then
+    echo "WARNING: Broadcast startup continues, but monitoring did not start."
+
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send \
+            "Meetinghouse Broadcast" \
+            "Broadcast startup continues, but monitoring did not start."
+    fi
+fi
+
 if command -v notify-send >/dev/null 2>&1; then
 	notify-send \
     	    "Meetinghouse Broadcast" \
